@@ -1,0 +1,2 @@
+# Lacwech_Solomon_2401002507
+Intelligent_Lighting_System Team A
