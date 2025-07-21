@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechKitgum Systems - Intelligent Lighting Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;660&display=swap" rel="stylesheet">
+    <style>
+        /* Basic Reset & Body Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2f7; /* Light blue background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Main Container Styling */
+        .container {
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Softer, larger shadow */
+            text-align: center;
+            width: 95%; /* More fluid width */
+            max-width: 550px; /* Slightly larger max-width */
+            box-sizing: border-box; /* Include padding in width */
+            margin: 20px auto; /* Center with margin */
+        }
+
+        /* Header Styling */
+        h1 {
+            color: #007bff; /* Primary blue */
+            margin-bottom: 30px;
+            font-weight: 660; /* Semi-bold */
+            font-size: 2.2em; /* Larger heading */
+            line-height: 1.2;
+        }
+
+        /* WiFi Connection Panel */
+        .wifi-panel {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .wifi-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .wifi-connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .wifi-disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .wifi-icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        .connection-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-connect {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .btn-connect:hover {
+            background-color: #0069d9;
+        }
+
+        /* Control Section Styling */
+        .control-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #f8f9fa; /* Very light grey for sections */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .control-section h2 {
+            color: #0056b3; /* Darker blue for subheadings */
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+        }
+        .control-section p {
+            margin-top: 5px;
+            font-size: 1.1em;
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #6c757d; /* Muted grey for OFF state */
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px; /* More rounded */
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Add transform for subtle click effect */
+            width: 80%; /* Slightly narrower buttons */
+            max-width: 250px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Button shadow */
+        }
+
+        button:hover {
+            background-color: #5a6268; /* Darker grey on hover */
+            transform: translateY(-2px); /* Lift effect on hover */
+        }
+
+        button:active {
+            transform: translateY(0); /* Press effect */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ON state for buttons */
+        button.on {
+            background-color: #28a745; /* Green for ON state */
+        }
+
+        button.on:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        /* Status Indicator Styling */
+        .status-indicator {
+            display: inline-block;
+            width: 20px; /* Larger indicator */
+            height: 20px;
+            border-radius: 50%;
+            background-color: #ccc; /* Default grey */
+            margin-left: 15px;
+            vertical-align: middle;
+            border: 2px solid rgba(0,0,0,0.1); /* Subtle border */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Inner shadow for depth */
+        }
+
+        .status-indicator.on {
+            background-color: #28a745; /* Green for ON */
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.6), inset 0 1px 3px rgba(0,0,0,0.2); /* Glow effect */
+        }
+
+        .status-indicator.off {
+            background-color: #dc3545; /* Red for OFF */
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.6), inset 0 1px 3px rgba(0,0,0,0.2); /* Glow effect */
+        }
+
+        /* Footer Styling */
+        footer {
+            margin-top: 40px;
+            font-size: 0.85em;
+            color: #555;
+            text-align: center;
+            padding: 15px;
+            background-color: #f0f0f0; /* Light grey footer background */
+            width: 100%;
+            box-sizing: border-box;
+            border-top: 1px solid #ddd;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            button {
+                font-size: 1.1em;
+                padding: 12px 20px;
+                width: 90%;
+            }
+            .status-indicator {
+                width: 18px;
+                height: 18px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>TechKitgum Systems <br> Intelligent Lighting Control</h1>
+
+        <!-- WiFi Connection Panel -->
+        <div class="wifi-panel">
+            <div id="wifiStatusDisplay" class="wifi-status wifi-disconnected">
+                <i class="fas fa-wifi wifi-icon"></i>
+                <span id="wifiStatusText">Disconnected from ESP32</span>
+            </div>
+            <div class="connection-form" id="connectionForm">
+                <div class="form-group">
+                    <label for="wifiSSID">ESP32 WiFi SSID</label>
+                    <input type="text" id="wifiSSID" placeholder="Enter ESP32 SSID">
+                </div>
+                <div class="form-group">
+                    <label for="wifiPassword">Password</label>
+                    <input type="password" id="wifiPassword" placeholder="Enter WiFi password">
+                </div>
+                <div class="form-group">
+                    <label for="controllerIP">Controller IP</label>
+                    <input type="text" id="controllerIP" placeholder="192.168.4.1">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-connect" id="connectBtn">Connect</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h2>Automatic Mode</h2>
+            <button id="autoModeButton" onclick="toggleAutoMode()">Toggle Automatic Mode</button>
+            <span id="autoModeStatus" class="status-indicator off"></span>
+            <p>Light Sensor Reading: <span id="ldrValue">---</span></p>
+        </div>
+
+        <div class="control-section">
+            <h2>Manual LED Control</h2>
+            <div class="light-control">
+                <h3>LED 1</h3>
+                <button id="led1Button" onclick="toggleLED(1)">Toggle LED 1</button>
+                <span id="led1Status" class="status-indicator off"></span>
+            </div>
+
+            <div class="light-control">
+                <h3>LED 2</h3>
+                <button id="led2Button" onclick="toggleLED(2)">Toggle LED 2</button>
+                <span id="led2Status" class="status-indicator off"></span>
+            </div>
+
+            <div class="light-control">
+                <h3>LED 3</h3>
+                <button id="led3Button" onclick="toggleLED(3)">Toggle LED 3</button>
+                <span id="led3Status" class="status-indicator off"></span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 TechKitgum Systems</p>
+        <p>Powered by Team A</p>
+        <p>Lacwech Solomon Reg No.24/U/2705/GIW/PS</p>
+    </footer>
+
+    <script>
+        // WiFi Connection Variables
+        let controllerBaseUrl = '';
+        let isConnected = false;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 3;
+        let statusCheckInterval;
+
+        // DOM Elements
+        const wifiStatusDisplay = document.getElementById('wifiStatusDisplay');
+        const wifiStatusText = document.getElementById('wifiStatusText');
+        const wifiIcon = document.querySelector('.wifi-icon');
+        const connectBtn = document.getElementById('connectBtn');
+        const wifiSSID = document.getElementById('wifiSSID');
+        const wifiPassword = document.getElementById('wifiPassword');
+        const controllerIP = document.getElementById('controllerIP');
+
+        // Initialize WiFi Connection
+        function initWiFiConnection() {
+            // Load saved connection details if available
+            const savedSSID = localStorage.getItem('techkitgum_wifi_ssid');
+            const savedIP = localStorage.getItem('techkitgum_controller_ip');
+            
+            if (savedSSID) wifiSSID.value = savedSSID;
+            if (savedIP) controllerIP.value = savedIP;
+            
+            // Set up event listeners
+            connectBtn.addEventListener('click', connectToController);
+            
+            // Check if we should auto-connect
+            if (savedIP) {
+                connectToController();
+            }
+        }
+
+        // Connect to the ESP32 controller
+        async function connectToController() {
+            const ssid = wifiSSID.value.trim();
+            const ip = controllerIP.value.trim();
+            const password = wifiPassword.value;
+            
+            if (!ip) {
+                updateConnectionStatus(false, 'Please enter controller IP');
+                return;
+            }
+            
+            // Save connection details
+            localStorage.setItem('techkitgum_wifi_ssid', ssid);
+            localStorage.setItem('techkitgum_controller_ip', ip);
+            
+            controllerBaseUrl = `http://${ip}`;
+            
+            updateConnectionStatus(false, 'Connecting...');
+            wifiIcon.className = 'fas fa-sync-alt fa-spin wifi-icon';
+            
+            try {
+                // First try to connect to the controller
+                const pingResponse = await fetch(`${controllerBaseUrl}/ping`, { timeout: 5000 });
+                
+                if (pingResponse.ok) {
+                    const pingResult = await pingResponse.text();
+                    if (pingResult.includes('pong')) {
+                        // Successful connection
+                        isConnected = true;
+                        reconnectAttempts = 0;
+                        updateConnectionStatus(true, `Connected to ${ip}`);
+                        
+                        // Start periodic status updates
+                        clearInterval(statusCheckInterval);
+                        statusCheckInterval = setInterval(updateAllStatus, 3000);
+                        updateAllStatus();
+                        
+                        return;
+                    }
+                }
+                
+                // If ping failed, try connecting to WiFi first
+                if (ssid && password) {
+                    updateConnectionStatus(false, 'Connecting to WiFi...');
+                    
+                    const wifiResponse = await fetch(`${controllerBaseUrl}/connect`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            ssid: ssid,
+                            password: password
+                        }),
+                        timeout: 10000
+                    });
+                    
+                    if (wifiResponse.ok) {
+                        const wifiResult = await wifiResponse.json();
+                        if (wifiResult.success) {
+                            // WiFi connected, now try controller again
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            return connectToController();
+                        }
+                    }
+                }
+                
+                throw new Error('Connection failed');
+            } catch (error) {
+                console.error('Connection error:', error);
+                handleConnectionError();
+            }
+        }
+
+        // Handle connection errors
+        function handleConnectionError() {
+            reconnectAttempts++;
+            
+            if (reconnectAttempts <= maxReconnectAttempts) {
+                updateConnectionStatus(false, `Retrying (${reconnectAttempts}/${maxReconnectAttempts})`);
+                setTimeout(connectToController, 2000);
+            } else {
+                updateConnectionStatus(false, 'Connection failed. Please check settings.');
+                wifiIcon.className = 'fas fa-wifi wifi-icon';
+            }
+        }
+
+        // Update connection status UI
+        function updateConnectionStatus(connected, message) {
+            isConnected = connected;
+            
+            if (connected) {
+                wifiStatusDisplay.className = 'wifi-status wifi-connected';
+                wifiStatusText.textContent = message || 'Connected';
+                wifiIcon.className = 'fas fa-wifi wifi-icon';
+            } else {
+                wifiStatusDisplay.className = 'wifi-status wifi-disconnected';
+                wifiStatusText.textContent = message || 'Disconnected';
+                
+                if (!message.includes('Retrying') && !message.includes('Connecting')) {
+                    wifiIcon.className = 'fas fa-wifi wifi-icon';
+                }
+            }
+        }
+
+        // Function to send a request to the ESP32 to toggle an LED
+        async function toggleLED(ledNum) {
+            if (!isConnected) {
+                alert('Not connected to controller. Please connect first.');
+                return;
+            }
+
+            const button = document.getElementById(`led${ledNum}Button`);
+            const statusIndicator = document.getElementById(`led${ledNum}Status`);
+
+            try {
+                const response = await fetch(`${controllerBaseUrl}/led${ledNum}/toggle`, { timeout: 3000 });
+                const data = await response.text();
+                console.log(`Response for LED${ledNum}:`, data);
+                updateUI(ledNum, data.includes("ON")); // Update UI based on response
+            } catch (error) {
+                console.error('Error toggling LED:', error);
+                updateConnectionStatus(false, 'Connection lost. Reconnecting...');
+                handleConnectionError();
+            }
+        }
+
+        // Function to toggle Automatic Mode
+        async function toggleAutoMode() {
+            if (!isConnected) {
+                alert('Not connected to controller. Please connect first.');
+                return;
+            }
+
+            const button = document.getElementById('autoModeButton');
+            const statusIndicator = document.getElementById('autoModeStatus');
+
+            try {
+                const response = await fetch(`${controllerBaseUrl}/automode/toggle`, { timeout: 3000 });
+                const data = await response.json(); // Expecting JSON: { "autoModeEnabled": true/false }
+                console.log('Auto Mode Toggled:', data);
+                updateAutoModeUI(data.autoModeEnabled);
+            } catch (error) {
+                console.error('Error toggling Auto Mode:', error);
+                updateConnectionStatus(false, 'Connection lost. Reconnecting...');
+                handleConnectionError();
+            }
+        }
+
+        // Function to fetch the current status of all LEDs and Auto Mode from the ESP32
+        async function updateAllStatus() {
+            if (!isConnected) return;
+
+            try {
+                const response = await fetch(`${controllerBaseUrl}/status`, { timeout: 3000 });
+                const data = await response.json();
+                console.log("Current System Status:", data);
+
+                updateUI(1, data.led1);
+                updateUI(2, data.led2);
+                updateUI(3, data.led3);
+                updateAutoModeUI(data.autoModeEnabled);
+                document.getElementById('ldrValue').innerText = data.ldrValue; // Update LDR value
+
+            } catch (error) {
+                console.error('Error fetching system status:', error);
+                updateConnectionStatus(false, 'Connection lost. Reconnecting...');
+                handleConnectionError();
+            }
+        }
+
+        // Helper function to update the UI elements for a specific LED
+        function updateUI(ledNum, state) {
+            const button = document.getElementById(`led${ledNum}Button`);
+            const statusIndicator = document.getElementById(`led${ledNum}Status`);
+
+            if (state) { // If state is true (LED is ON)
+                button.classList.add('on');
+                statusIndicator.classList.remove('off');
+                statusIndicator.classList.add('on');
+            } else { // If state is false (LED is OFF)
+                button.classList.remove('on');
+                statusIndicator.classList.remove('on');
+                statusIndicator.classList.add('off');
+            }
+        }
+
+        // Helper function to update the UI for Automatic Mode
+        function updateAutoModeUI(state) {
+            const button = document.getElementById('autoModeButton');
+            const statusIndicator = document.getElementById('autoModeStatus');
+
+            if (state) {
+                button.classList.add('on');
+                button.innerText = "Automatic Mode: ON";
+                statusIndicator.classList.remove('off');
+                statusIndicator.classList.add('on');
+            } else {
+                button.classList.remove('on');
+                button.innerText = "Automatic Mode: OFF";
+                statusIndicator.classList.remove('on');
+                statusIndicator.classList.add('off');
+            }
+        }
+
+        // Initialize the application
+        window.onload = function() {
+            initWiFiConnection();
+        };
+    </script>
+</body>
+</html>
